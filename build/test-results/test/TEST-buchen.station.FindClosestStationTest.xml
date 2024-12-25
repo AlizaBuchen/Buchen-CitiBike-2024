@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="buchen.station.FindClosestStationTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-12-25T02:18:16" hostname="Alizas-Air-2" time="11.015">
+  <properties/>
+  <testcase name="testClosestStationWithAvailableBikes()" classname="buchen.station.FindClosestStationTest" time="10.655"/>
+  <testcase name="testClosestStationWithAvailableSlots()" classname="buchen.station.FindClosestStationTest" time="0.204"/>
+  <testcase name="findClosestStation()" classname="buchen.station.FindClosestStationTest" time="0.148"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
