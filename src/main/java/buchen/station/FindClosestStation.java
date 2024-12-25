@@ -13,10 +13,7 @@ public class FindClosestStation {
 
             if (stationInfo != null && stationInfo.data != null) {
                 for (Station station : stationInfo.data.stations) {
-                    stationsMap.put(station.station_id, new Station(
-                            station.lat, station.lon, station.station_id, station.name,
-                            0, 0, 0
-                    ));
+                    stationsMap.put(station.station_id, station);
                 }
             }
 
