@@ -9,7 +9,7 @@ import java.util.Map;
 public class FindClosestStationTest {
 
     @Test
-    void testClosestStationWithAvailableBikes() {
+    void closestStationWithAvailableBikes() {
         //Given
         CitiBikeServiceFactory factory = new CitiBikeServiceFactory();
         CitiBikeService service = factory.getService();
@@ -21,16 +21,16 @@ public class FindClosestStationTest {
 
         // when
         Station closestStation = stationFinder.closestStationAvailableBikes(stationsMap, lat, lon);
-        boolean hasAvailable = closestStation.num_bikes_available > 0 || closestStation.num_ebikes_available > 0;
 
         // then
+        boolean hasAvailable = closestStation.num_bikes_available > 0 || closestStation.num_ebikes_available > 0;
         assertNotNull(closestStation);
         assertEquals("FDR Drive & E 35 St", closestStation.name, "Expected station name to be 'FDR Drive & E 35 St'");
         assertTrue(hasAvailable);
     }
 
     @Test
-    void testClosestStationWithAvailableSlots() {
+    void closestStationWithAvailableSlots() {
         //Given
         CitiBikeServiceFactory factory = new CitiBikeServiceFactory();
         CitiBikeService service = factory.getService();
@@ -42,9 +42,9 @@ public class FindClosestStationTest {
 
         // when
         Station closestStation = stationFinder.closestStationAvailableSlots(stationsMap, lat, lon);
-        boolean hasAvailable = closestStation.num_docks_available > 0;
 
         // then
+        boolean hasAvailable = closestStation.num_docks_available > 0;
         assertNotNull(closestStation);
         assertEquals("Central Park W & W 85 St", closestStation.name,
                 "Expected station name to be 'FDR Drive & E 35 St'");

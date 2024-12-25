@@ -31,7 +31,7 @@ public class FindClosestStation {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Failed to fetch or merge station data: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return stationsMap;
