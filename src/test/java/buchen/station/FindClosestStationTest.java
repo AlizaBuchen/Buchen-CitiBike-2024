@@ -46,7 +46,8 @@ public class FindClosestStationTest {
 
         // then
         assertNotNull(closestStation);
-        assertEquals("Central Park W & W 85 St", closestStation.name, "Expected station name to be 'FDR Drive & E 35 St'");
+        assertEquals("Central Park W & W 85 St", closestStation.name,
+                "Expected station name to be 'FDR Drive & E 35 St'");
         assertTrue(hasAvailable);
     }
 
@@ -63,6 +64,7 @@ public class FindClosestStationTest {
 
         //then
         assertNotNull(stationsMap.get(id));
-        assertEquals("Central Park W & W 85 St", stationsMap.get(id).name, "Expected station name to be 'Central Park W & W 85 St'");
+        assertEquals("Central Park W & W 85 St", stationsMap.get(id).name,
+                "Expected station name to be 'Central Park W & W 85 St'");
     }
 }
