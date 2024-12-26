@@ -24,13 +24,9 @@ public class CitiBikeRequestHandler implements RequestHandler<APIGatewayProxyReq
         FindClosestStation stationFinder = new FindClosestStation();
         Map<String, Station> stationsMap = stationFinder.merge(service);
 
-        CitiBikeResponse response = new CitiBikeResponse();
-        response.from = request.from;
-        response.to = request.to;
+        Station start = stationFinder.closestStationAvailableBikes(stationsMap, request.from.lat, request.from.lon);
+        Station end = stationFinder.closestStationAvailableSlots(stationsMap, request.to.lat, request.to.lon);
 
-        response.start = stationFinder.closestStationAvailableBikes(stationsMap, request.from.lat, request.from.lon);
-        response.end = stationFinder.closestStationAvailableSlots(stationsMap, request.to.lat, request.to.lon);
-
-        return response;
+        return new CitiBikeResponse(request.from, request.to, start, end);
     }
 }
