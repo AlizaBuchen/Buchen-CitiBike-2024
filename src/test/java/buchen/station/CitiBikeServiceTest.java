@@ -30,9 +30,9 @@ public class CitiBikeServiceTest {
         Stations info = service.stationStatus().blockingGet();
 
         //then
-        boolean isData = info.data.stations[2].num_bikes_available > 0
-                || info.data.stations[2].num_ebikes_available > 0 || info.data.stations[2].num_docks_available > 0;
-        assertNotNull(info.data.stations[2].station_id);
+        boolean isData = info.data.stations[0].num_bikes_available > 0
+                || info.data.stations[0].num_ebikes_available > 0 || info.data.stations[0].num_docks_available > 0;
+        assertNotNull(info.data.stations[0].station_id);
         assertTrue(isData);
     }
 }

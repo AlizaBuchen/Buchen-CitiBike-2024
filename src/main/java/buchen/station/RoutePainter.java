@@ -15,6 +15,7 @@ import org.jxmapviewer.painter.Painter;
 
 /**
  * Paints a route
+ *
  * @author Martin Steiger
  */
 public class RoutePainter implements Painter<JXMapViewer>
@@ -44,9 +45,9 @@ public class RoutePainter implements Painter<JXMapViewer>
         Rectangle rect = map.getViewportBounds();
         g.translate(-rect.x, -rect.y);
 
-        if (antiAlias)
+        if (antiAlias) {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
+        }
         // do the drawing
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(4));
@@ -81,8 +82,7 @@ public class RoutePainter implements Painter<JXMapViewer>
             if (first)
             {
                 first = false;
-            }
-            else
+            } else
             {
                 g.drawLine(lastX, lastY, (int) pt.getX(), (int) pt.getY());
             }

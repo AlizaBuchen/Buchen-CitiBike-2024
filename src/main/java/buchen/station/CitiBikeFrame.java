@@ -5,11 +5,11 @@ import javax.swing.*;
 
 public class CitiBikeFrame extends JFrame {
     public CitiBikeFrame() {
-        CitiBikeController controller = new CitiBikeController();
         setTitle("CitiBike");
         setSize(1200, 1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        CitiBikeController controller = new CitiBikeController();
         add(controller.getMap(), BorderLayout.CENTER);
 
 

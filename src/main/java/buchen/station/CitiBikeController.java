@@ -28,7 +28,7 @@ public class CitiBikeController {
     private BiConsumer<Double, Double> endPointDouble;
     private final List<GeoPosition> track = new ArrayList<>();
 
-    public JXMapViewer getMap(){
+    public JXMapViewer getMap() {
         mapViewer = new JXMapViewer();
 
         TileFactoryInfo info = new OSMTileFactoryInfo();
@@ -55,7 +55,7 @@ public class CitiBikeController {
                 int x = e.getX();
                 int y = e.getY();
                 Point2D.Double point = new Point2D.Double(x, y);
-                    if (!start){
+                    if (!start) {
                         startLocation = mapViewer.convertPointToGeoPosition(point);
                         startPointDouble.accept(startLocation.getLatitude(), startLocation.getLongitude());
                         start = true;
@@ -76,8 +76,10 @@ public class CitiBikeController {
         FindClosestStation find = new FindClosestStation();
         Map<String, Station> stationsMap = find.merge(service);
 
-        startStation = find.closestStationAvailableBikes(stationsMap, startLocation.getLatitude(), startLocation.getLongitude());
-        endStation = find.closestStationAvailableSlots(stationsMap, endLocation.getLatitude(), endLocation.getLongitude());
+        startStation = find.closestStationAvailableBikes(stationsMap,
+                startLocation.getLatitude(), startLocation.getLongitude());
+        endStation = find.closestStationAvailableSlots(stationsMap,
+                endLocation.getLatitude(), endLocation.getLongitude());
 
         WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<>();
         Set<Waypoint> waypoints = Set.of(
