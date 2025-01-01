@@ -11,7 +11,6 @@ class LambdaServiceTest {
 
     @Test
     void getClosestStations_returnsValidResponse() {
-        LambdaService service = new LambdaServiceFactory().getService();
 
         Point fromLocation = new Point();
         fromLocation.lat = 40.8211; // Example: Start in NYC
@@ -25,6 +24,7 @@ class LambdaServiceTest {
         request.from = fromLocation;
         request.to = toLocation;
 
+        LambdaService service = new LambdaServiceFactory().getService();
         CitiBikeResponse response = service.getClosestStations(request).blockingGet();
 
         assertNotNull(response, "Response should not be null");
