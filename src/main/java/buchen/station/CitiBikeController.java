@@ -1,5 +1,14 @@
 package buchen.station;
 
+
+
+import aws.CitiBikeRequest;
+import aws.CitiBikeResponse;
+import aws.Point;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import lambda.LambdaService;
+import lambda.LambdaServiceFactory;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.input.CenterMapListener;
@@ -7,26 +16,32 @@ import org.jxmapviewer.input.PanKeyListener;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCursor;
 import org.jxmapviewer.painter.CompoundPainter;
-import org.jxmapviewer.viewer.*;
 import org.jxmapviewer.painter.Painter;
+import org.jxmapviewer.viewer.*;
+
+
 
 import javax.swing.event.MouseInputListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 public class CitiBikeController {
     private JXMapViewer mapViewer;
-    boolean start = false;
-    private GeoPosition startLocation;
-    private GeoPosition endLocation;
-    private Station startStation;
-    private Station endStation;
     private BiConsumer<Double, Double> startPointDouble;
     private BiConsumer<Double, Double> endPointDouble;
+    private boolean start = false;
+    private GeoPosition startLocation;
+    private GeoPosition endLocation;
     private final List<GeoPosition> track = new ArrayList<>();
+    private Set<Waypoint> waypoints;
 
     public JXMapViewer getMap() {
         mapViewer = new JXMapViewer();
@@ -41,6 +56,7 @@ public class CitiBikeController {
         GeoPosition nyc = new GeoPosition(40.77228687788679, -73.9842939376831);
         mapViewer.setAddressLocation(nyc);
 
+
         MouseInputListener mia = new PanMouseInputListener(mapViewer);
         mapViewer.addMouseListener(mia);
         mapViewer.addMouseMotionListener(mia);
@@ -48,22 +64,20 @@ public class CitiBikeController {
         mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCursor(mapViewer));
         mapViewer.addKeyListener(new PanKeyListener(mapViewer));
 
-
         mapViewer.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int x = e.getX();
                 int y = e.getY();
                 Point2D.Double point = new Point2D.Double(x, y);
-                    if (!start) {
-                        startLocation = mapViewer.convertPointToGeoPosition(point);
-                        startPointDouble.accept(startLocation.getLatitude(), startLocation.getLongitude());
-                        start = true;
-                    } else
-                    {
-                        endLocation = mapViewer.convertPointToGeoPosition(point);
-                        endPointDouble.accept(endLocation.getLatitude(), endLocation.getLongitude());
-                    }
+                if (!start) {
+                    startLocation = mapViewer.convertPointToGeoPosition(point);
+                    startPointDouble.accept(startLocation.getLatitude(), startLocation.getLongitude());
+                    start = true;
+                } else {
+                    endLocation = mapViewer.convertPointToGeoPosition(point);
+                    endPointDouble.accept(endLocation.getLatitude(), endLocation.getLongitude());
+                }
                 updateWaypoints();
             }
         });
@@ -71,30 +85,26 @@ public class CitiBikeController {
     }
 
     public void showRoute() {
-        CitiBikeServiceFactory factory = new CitiBikeServiceFactory();
-        CitiBikeService service = factory.getService();
-        FindClosestStation find = new FindClosestStation();
-        Map<String, Station> stationsMap = find.merge(service);
+        CitiBikeResponse response = getLambda(writeToJson());
+        Station startStation = response.start;
+        Station endStation = response.end;
 
-        startStation = find.closestStationAvailableBikes(stationsMap,
-                startLocation.getLatitude(), startLocation.getLongitude());
-        endStation = find.closestStationAvailableSlots(stationsMap,
-                endLocation.getLatitude(), endLocation.getLongitude());
-
-        WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<>();
-        Set<Waypoint> waypoints = Set.of(
+        WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
+        waypoints = Set.of(
                 new DefaultWaypoint(startLocation),
                 new DefaultWaypoint(endLocation),
-                new DefaultWaypoint(new GeoPosition(startStation.lat, startStation.lon)),
-                new DefaultWaypoint(new GeoPosition(endStation.lat, endStation.lon))
+                new DefaultWaypoint(startStation.lat, startStation.lon),
+                new DefaultWaypoint(endStation.lat, endStation.lon)
         );
         waypointPainter.setWaypoints(waypoints);
+
 
         track.clear();
         track.add(startLocation);
         track.add(new GeoPosition(startStation.lat, startStation.lon));
         track.add(new GeoPosition(endStation.lat, endStation.lon));
         track.add(endLocation);
+
 
         RoutePainter routePainter = new RoutePainter(track);
 
@@ -103,8 +113,8 @@ public class CitiBikeController {
                 routePainter
         );
 
-        CompoundPainter<JXMapViewer> compoundPainter = new CompoundPainter<>(painters);
-        mapViewer.setOverlayPainter(compoundPainter);
+        CompoundPainter<JXMapViewer> painter = new CompoundPainter<>(painters);
+        mapViewer.setOverlayPainter(painter);
 
         mapViewer.zoomToBestFit(
                 Set.of(
@@ -136,7 +146,6 @@ public class CitiBikeController {
         if (endLocation != null) {
             waypoints.add(new DefaultWaypoint(endLocation));
         }
-
         waypointPainter.setWaypoints(waypoints);
         mapViewer.setOverlayPainter(waypointPainter);
         mapViewer.repaint();
@@ -146,9 +155,43 @@ public class CitiBikeController {
         start = false;
         startLocation = null;
         endLocation = null;
-        startStation = null;
-        endStation = null;
         mapViewer.setOverlayPainter(null);
         mapViewer.repaint();
+    }
+
+    public CitiBikeRequest writeToJson() {
+        Point from = new Point();
+        from.lat = startLocation.getLatitude();
+        from.lon = startLocation.getLongitude();
+
+        Point to = new Point();
+        to.lat = endLocation.getLatitude();
+        to.lon = endLocation.getLongitude();
+
+        CitiBikeRequest request = new CitiBikeRequest();
+        request.from = from;
+        request.to = to;
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter("request.json")) {
+            gson.toJson(request, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return request;
+    }
+
+    public CitiBikeResponse getLambda(CitiBikeRequest request) {
+        CitiBikeResponse citibikeResponse = null;
+        LambdaService api = new LambdaServiceFactory().getService();
+
+        try {
+            citibikeResponse = api.getClosestStations(request).blockingGet();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return citibikeResponse;
     }
 }
