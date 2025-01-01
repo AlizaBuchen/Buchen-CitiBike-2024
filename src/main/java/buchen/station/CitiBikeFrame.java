@@ -7,6 +7,7 @@ import javax.swing.*;
 
 public class CitiBikeFrame extends JFrame {
     private boolean start = false;
+
     public CitiBikeFrame() {
         setTitle("CitiBike");
         setSize(1200, 1000);

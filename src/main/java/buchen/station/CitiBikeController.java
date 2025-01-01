@@ -1,7 +1,5 @@
 package buchen.station;
 
-
-
 import aws.CitiBikeRequest;
 import aws.Point;
 import hu.akarnokd.rxjava3.swing.SwingSchedulers;
@@ -40,7 +38,6 @@ public class CitiBikeController {
     }
 
     public void closestStations() {
-        LambdaService service = new LambdaServiceFactory().getService();
 
         Point from = new Point();
         from.lat = startLocation.getLatitude();
@@ -54,6 +51,7 @@ public class CitiBikeController {
         request.from = from;
         request.to = to;
 
+        LambdaService service = new LambdaServiceFactory().getService();
         disposables.add(service.getClosestStations(request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(SwingSchedulers.edt())
@@ -71,7 +69,6 @@ public class CitiBikeController {
 
     public void showRoute() {
 
-        WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
         waypoints = Set.of(
                 new DefaultWaypoint(startLocation),
                 new DefaultWaypoint(endLocation),
@@ -87,6 +84,7 @@ public class CitiBikeController {
 
         RoutePainter routePainter = new RoutePainter(track);
 
+        WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<Waypoint>();
         List<Painter<JXMapViewer>> painters = List.of(
                 waypointPainter,
                 routePainter
@@ -143,6 +141,7 @@ public class CitiBikeController {
         startLocation = view.getMapViewer().convertPointToGeoPosition(point);
         startPointDouble.accept(startLocation.getLatitude(), startLocation.getLongitude());
     }
+
     public void setEndLocation(int x, int y) {
         Point2D.Double point = new Point2D.Double(x, y);
         endLocation = view.getMapViewer().convertPointToGeoPosition(point);
