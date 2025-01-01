@@ -1,17 +1,37 @@
 package buchen.station;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 public class CitiBikeFrame extends JFrame {
+    private boolean start = false;
     public CitiBikeFrame() {
         setTitle("CitiBike");
         setSize(1200, 1000);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        CitiBikeController controller = new CitiBikeController();
-        add(controller.getMap(), BorderLayout.CENTER);
 
+        CitiBikeComponent view = new CitiBikeComponent();
+        CitiBikeController controller = new CitiBikeController(view);
+
+        view.getMapViewer().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+                if (!controller.canStart()) {
+                    controller.setStartLocation(x, y);
+                    controller.setStart(true);
+                } else {
+                    controller.setEndLocation(x, y);
+                }
+                controller.updateWaypoints();
+            }
+        });
+
+        add(view, BorderLayout.CENTER);
 
         JLabel start = new JLabel("Start: ");
         JLabel end = new JLabel("End: ");
@@ -43,14 +63,16 @@ public class CitiBikeFrame extends JFrame {
         controller.setEndPoint((lat, lon) -> endLocation.setText(String.format("%.6f, %.6f", lat, lon)));
 
         directions.addActionListener(e -> {
-            controller.showRoute();
+            controller.closestStations();
             repaint();
         });
+
 
         clear.addActionListener(e -> {
             controller.clear();
             startLocation.setText("");
             endLocation.setText("");
+            controller.setStart(false);
             repaint();
         });
     }
