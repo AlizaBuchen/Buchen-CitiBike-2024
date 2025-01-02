@@ -3,7 +3,7 @@ package buchen.station;
 public class Station {
 
     //station information
-    double lat;
+    public double lat;
     public double lon;
     //CHECKSTYLE:OFF
     public String station_id;
