@@ -1,14 +1,16 @@
 package buchen.station;
 
+import lambda.StationsCache;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class FindClosestStation {
-    public Map<String, Station> merge(CitiBikeService service) {
+    public Map<String, Station> merge(CitiBikeService service, StationsCache cache) {
         Map<String, Station> stationsMap = new HashMap<>();
 
         try {
-            Stations stationInfo = service.stationInfo().blockingGet();
+            Stations stationInfo = cache.getStations();
             Stations stationStatus = service.stationStatus().blockingGet();
 
             if (stationInfo != null && stationInfo.data != null) {

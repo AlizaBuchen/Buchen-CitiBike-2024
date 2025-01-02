@@ -1,6 +1,7 @@
 package buchen.station;
 
 
+import lambda.StationsCache;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.Map;
@@ -14,8 +15,9 @@ public class FindClosestStationTest {
         CitiBikeServiceFactory factory = new CitiBikeServiceFactory();
         CitiBikeService service = factory.getService();
         FindClosestStation stationFinder = new FindClosestStation();
+        StationsCache cache = new StationsCache();
 
-        Map<String, Station> stationsMap = stationFinder.merge(service);
+        Map<String, Station> stationsMap = stationFinder.merge(service, cache);
         double lon = -73.971212141;
         double lat = 40.744220;
 
@@ -35,8 +37,10 @@ public class FindClosestStationTest {
         CitiBikeServiceFactory factory = new CitiBikeServiceFactory();
         CitiBikeService service = factory.getService();
         FindClosestStation stationFinder = new FindClosestStation();
+        StationsCache cache = new StationsCache();
 
-        Map<String, Station> stationsMap = stationFinder.merge(service);
+
+        Map<String, Station> stationsMap = stationFinder.merge(service, cache);
         double lat = 40.7851;
         double lon = -73.9683;
 
@@ -57,10 +61,11 @@ public class FindClosestStationTest {
         CitiBikeServiceFactory factory = new CitiBikeServiceFactory();
         CitiBikeService service = factory.getService();
         FindClosestStation stationFinder = new FindClosestStation();
+        StationsCache cache = new StationsCache();
         String id = "50575cba-95ac-4134-9da1-3eec8253afc4";
 
         //when
-        Map<String, Station> stationsMap = stationFinder.merge(service);
+        Map<String, Station> stationsMap = stationFinder.merge(service, cache);
 
         //then
         assertNotNull(stationsMap.get(id));
