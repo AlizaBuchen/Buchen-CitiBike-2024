@@ -155,4 +155,13 @@ public class CitiBikeController {
     public boolean canStart() {
         return start;
     }
+
+    public void insertPoint(int x, int y) {
+        if (!canStart()) {
+            setStartLocation(x, y);
+            setStart(true);
+        } else {
+            setEndLocation(x, y);
+        }
+    }
 }
