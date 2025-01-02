@@ -10,14 +10,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class LambdaServiceTest {
 
     @Test
-    void getClosestStations_returnsValidResponse() {
+    void getClosestStations() {
 
         Point fromLocation = new Point();
-        fromLocation.lat = 40.8211; // Example: Start in NYC
+        fromLocation.lat = 40.8211;
         fromLocation.lon = -73.9359;
 
         Point toLocation = new Point();
-        toLocation.lat = 40.719; // Example: Destination in NYC
+        toLocation.lat = 40.719;
         toLocation.lon = -73.9585;
 
         CitiBikeRequest request = new CitiBikeRequest();

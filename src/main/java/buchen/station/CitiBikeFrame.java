@@ -22,12 +22,7 @@ public class CitiBikeFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 int x = e.getX();
                 int y = e.getY();
-                if (!controller.canStart()) {
-                    controller.setStartLocation(x, y);
-                    controller.setStart(true);
-                } else {
-                    controller.setEndLocation(x, y);
-                }
+                controller.insertPoint(x, y);
                 controller.updateWaypoints();
             }
         });
